@@ -236,7 +236,7 @@ while True:
                 if mountain_p < lowp:
                     lowp = mountain_p
                 print (highp, ' ', lowp)
-                if highp > lowp * 2:
+                if highp > lowp * 1.5:
                     status = 'bad'
                     f2 = f2 +1
                     print(f2, 'probability imbalance')
@@ -328,7 +328,7 @@ while True:
 print ('number of arrangements of hexagons', f1)
 print ('number of arrangements of discs', f2)
 print ('number of arrangements of harbours', f3)
-print (' ')
+print (highp, ' ', lowp)
 
 print('            ', tile_ter[0], tile_number[0], '  ', tile_ter[1], tile_number[1], '  ', tile_ter[2], tile_number[2])
 print('      ', tile_ter[3], tile_number[3], '  ', tile_ter[4], tile_number[4], '  ', tile_ter[5], tile_number[5], '  ', tile_ter[6], tile_number[6])
