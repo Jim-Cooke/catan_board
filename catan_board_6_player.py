@@ -55,10 +55,13 @@ adj = [[1, 3, 4],  #00
            [24, 25, 27, 29]  #28
            [25, 26, 28]]  #29
 
-# finished to here Jan 26       
+    
 
-# list of terrain tiles 0 to 18
+# list of terrain tiles 0 to 29
 ter = ['desert',
+           'desert',
+           'field',
+           'field',
            'field',
            'field',
            'field',
@@ -67,6 +70,10 @@ ter = ['desert',
            'pasture',
            'pasture',
            'pasture',
+           'pasture',
+           'pasture',
+           'forest',
+           'forest',
            'forest',
            'forest',
            'forest',
@@ -74,19 +81,33 @@ ter = ['desert',
            'hill',
            'hill',
            'hill',
+           'hill',
+           'hill',
+           'mountain',
+           'mountain',
            'mountain',
            'mountain',
            'mountain']
 
 terrain = ['field', 'pasture', 'forest', 'hill', 'mountain']
 # probability point for each terrain
-field_p = 0
-pasture_p = 0
-forest_p = 0
-hill_p = 0
-mountain_p = 0
-# number discs - position 0 to 17
-disc_number = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12]
+prob_ter = {
+    "field": 0,
+    "pasture": 0,
+    "forest": 0,
+    "hill": 0,
+    "mountain": 0
+}
+# red numbers on each terrain
+red_ter = {
+    "field": 0,
+    "pasture": 0,
+    "forest": 0,
+    "hill": 0,
+    "mountain": 0
+}
+# number discs - position 0 to 27
+disc_number = [2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12]
 
 #my random function
 def random_1 ():
@@ -122,7 +143,7 @@ while True:
         # print(n)
         while True:
             # p is location
-            p = int(19 * random_1())
+            p = int(30 * random_1())
             # find unused tile location
             if tile_ter[p] == 'x':
                 break
@@ -137,7 +158,8 @@ while True:
                 break
         if adjacent == 'yes':
             # reset everything, start over
-            tile_ter = ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x']
+            for n in range(0, 29):
+                tile_ter[n] = 'x'
             break
         # not same as adjacent, so set the tile
         tile_ter[p] = n
@@ -163,7 +185,7 @@ while True:
         # find location
         while True:
             # p is location
-            p = int(19 * random_1())
+            p = int(30 * random_1())
             # find unused tile location, not desert
             # print(p)
             if tile_ter[p] != 'desert' and tile_number[p] == 0:
@@ -199,27 +221,24 @@ while True:
                         break
                 if status == 'bad':
                     break
-            # test for 6, 8 on four different terrain types
+            # test for 6, 8 on five different terrain types
             if nt == 6 or nt == 8:
-                for tt in range(0, 5):
-                    if tile_ter[p] == terrain[tt]:
-                        terrain[tt] = 'x'
-                        break
-                if nt == 6 and prev == 6 and nox_ter(terrain) != 2:
-                    status = 'bad'
-                    f2 = f2 + 1
-                    print(f2, '6 or 8 on same terrain')
-                    break
-                if nt == 8 and prev == 6 and nox_ter(terrain) != 3:
-                    status = 'bad'
-                    f2 = f2 + 1
-                    print(f2, '6 or 8 on same terrain')
-                    break
-                if nt == 8 and prev == 8 and nox_ter(terrain) != 4:
-                    status = 'bad'
-                    f2 = f2 + 1
-                    print(f2, '6 or 8 on same terrain')
-                    break
+                red_ter[tile_ter[p]] = red_ter[tile_ter[p]] + 1
+                # test that no terrain type has too many 6 or 8
+                for rt in terrain:
+                    if red_ter[tt] > 2:
+                          status = 'bad'
+                          f2 = f2 + 1
+                          print(f2, 'too many 6 or 8 on a terrain')
+                          break
+            # make sure all terrains have at least 6 or 8
+            if nt == 9 and prev == 8:
+                for rt in terrain:
+                    if red_ter[tt] < 1:
+                          status = 'bad'
+                          f2 = f2 + 1
+                          print(f2, 'not enough 6 or 8 on a terrain')
+                          break    
             # test for powerful triple
             if nt == 9:
                 # find adjacent 5 or 6 or 8
@@ -249,49 +268,34 @@ while True:
             if nt == 6 or nt == 8:
                 dots = 5
             # add up probabilities
-            if tile_ter[p] == 'field':
-                field_p = field_p + dots
-            if tile_ter[p] == 'pasture':
-                pasture_p = pasture_p + dots
-            if tile_ter[p] == 'forest':
-                forest_p = forest_p + dots
-            if tile_ter[p] == 'hill':
-                hill_p = hill_p + dots
-            if tile_ter[p] == 'mountain':
-                mountain_p = mountain_p + dots
+            if tile_ter[p] != 'desert':
+                prob_ter[tile_ter[p]] = prob_ter[tile_ter[p]] + dots
             # test even probabilities of resources
-            if nt == 12:
-                highp = field_p
-                lowp = field_p
-                if pasture_p > highp:
-                    highp = pasture_p
-                if pasture_p < lowp:
-                    lowp = pasture_p
-                if forest_p > highp:
-                    highp = forest_p
-                if forest_p < lowp:
-                    lowp = forest_p
-                if hill_p > highp:
-                    highp = hill_p
-                if hill_p < lowp:
-                    lowp = hill_p
-                if mountain_p > highp:
-                    highp = mountain_p
-                if mountain_p < lowp:
-                    lowp = mountain_p
-                print (highp, ' ', lowp)
-                if highp > lowp * (3/2):
-                    status = 'bad'
-                    f2 = f2 +1
-                    print(f2, 'probability imbalance')
-                    break    
+            if nt == 12 and prev == 12:
+                highp = prob_ter['field']
+                lowp = highp
+                for pt in terrain:
+                    if prob_ter[pt] > highp:
+                        high_p = prob_ter[pt]
+                    if prob_ter[pt] < lowp:
+                        lowp = prob_ter[pt]
+
+            print (highp, ' ', lowp)
+            if highp > lowp * (3/2):
+                status = 'bad'
+                f2 = f2 +1
+                print(f2, 'probability imbalance')
+                break    
             # it survives all tests
             if status == 'good':
                 break
         if status == 'bad':
             # reset everything, break out of for loop
-            terrain = ['field', 'pasture', 'forest', 'hill', 'mountain']
-            tile_number = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            for n in range(1, 29):
+                tile_number[n] = 0
+
+#altered code down to here
+            
             field_p = 0
             pasture_p = 0
             forest_p = 0
