@@ -1,5 +1,7 @@
 # Program to generate balanced Catan boards for 6 player version
 
+#  need to change due to there being 3 discs of the same number
+
 # import libraries
 import random
 import time
@@ -17,8 +19,8 @@ import array
 
 #terrain type of tile and tile number
 tile_ter = ['x']
-tile_mumber = [0]
-for n in range(1, 29):
+tile_number = [0]
+for n in range(1, 30):
     tile_ter.append('x')
     tile_number.append(0)
 # terrain types: 2 desert, 6 field, 6 pasture, 6 forest, 5 hill, 5 mountain
@@ -42,17 +44,17 @@ adj = [[1, 3, 4],  #00
            [9, 10, 14, 16, 20, 21],  #15
            [10, 11, 15, 17, 21, 22],  #16
            [11, 16, 22],  #17
-           [12, 13, 19, 23]  #18
-           [13, 14, 18, 20, 23, 24]   #19
-           [14, 15, 19, 21, 24, 25]  #20
-           [15, 16, 20, 22, 25, 26]  #21
-           [16, 17, 21, 26]  #22
-           [18, 19, 24, 27]  #23
-           [19, 20, 23, 25, 27, 28]  #24
-           [20, 21, 24, 26, 28, 29]  #25
-           [21, 22, 25, 29]  #26
-           [23, 24, 28]  #27
-           [24, 25, 27, 29]  #28
+           [12, 13, 19, 23],  #18
+           [13, 14, 18, 20, 23, 24],   #19
+           [14, 15, 19, 21, 24, 25],  #20
+           [15, 16, 20, 22, 25, 26],  #21
+           [16, 17, 21, 26],  #22
+           [18, 19, 24, 27],  #23
+           [19, 20, 23, 25, 27, 28],  #24
+           [20, 21, 24, 26, 28, 29],  #25
+           [21, 22, 25, 29],  #26
+           [23, 24, 28],  #27
+           [24, 25, 27, 29],  #28
            [25, 26, 28]]  #29
 
     
@@ -144,31 +146,53 @@ while True:
         while True:
             # p is location
             p = int(30 * random_1())
+            # print(p)
             # find unused tile location
             if tile_ter[p] == 'x':
                 break
         # check that location p's terrain is not same as adjacent
         adjacent = 'no'
-        for a in adj[p]:
-            if tile_ter[a] == n:
+        for a1 in adj[p]:
+            if tile_ter[a1] == n:
                 # adjacent to same thing
+                print('adj')
                 adjacent = 'yes'
-                f1 = f1 + 1
-                print(f1)
-                break
+                # make 30 attempts to find a good tile
+                for att in range(0, 30):
+                    p = int(30 * random_1())
+                    print(p)
+                    if tile_ter[p] == 'x':
+                        print('found unused')
+                        adjacent = 'no'
+                        for a2 in adj[p]:
+                            if tile_ter[a2] == n:
+                                print('adj')
+                                adjacent = 'yes'
+                                break
+                        if adjacent == 'no':
+                            # found a good tile, break out of 30-for loop
+                            break
+                # failed to find a good tile 
+                if adjacent == 'yes':
+                    f1 = f1 + 1
+                    print(f1)
+                    break
         if adjacent == 'yes':
             # reset everything, start over
-            for n in range(0, 29):
-                tile_ter[n] = 'x'
+            for reset in range(0, 30):
+                tile_ter[reset] = 'x'
             break
         # not same as adjacent, so set the tile
         tile_ter[p] = n
+        print(tile_ter[p])
         # repeat loop with new n
     # if loop finished break out
     if adjacent == 'no':
         break
   
 # board of terrain tiles complete
+print('tiles complete')
+print(tile_ter)
 
 # add number discs to board
 # various rules
@@ -226,7 +250,7 @@ while True:
                 red_ter[tile_ter[p]] = red_ter[tile_ter[p]] + 1
                 # test that no terrain type has too many 6 or 8
                 for rt in terrain:
-                    if red_ter[tt] > 2:
+                    if red_ter[rt] > 2:
                           status = 'bad'
                           f2 = f2 + 1
                           print(f2, 'too many 6 or 8 on a terrain')
@@ -234,7 +258,7 @@ while True:
             # make sure all terrains have at least 6 or 8
             if nt == 9 and prev == 8:
                 for rt in terrain:
-                    if red_ter[tt] < 1:
+                    if red_ter[rt] < 1:
                           status = 'bad'
                           f2 = f2 + 1
                           print(f2, 'not enough 6 or 8 on a terrain')
@@ -268,6 +292,7 @@ while True:
             if nt == 6 or nt == 8:
                 dots = 5
             # add up probabilities
+            # print(p, 'rand')
             if tile_ter[p] != 'desert':
                 prob_ter[tile_ter[p]] = prob_ter[tile_ter[p]] + dots
             # test even probabilities of resources
@@ -279,28 +304,21 @@ while True:
                         high_p = prob_ter[pt]
                     if prob_ter[pt] < lowp:
                         lowp = prob_ter[pt]
-
-            print (highp, ' ', lowp)
-            if highp > lowp * (3/2):
-                status = 'bad'
-                f2 = f2 +1
-                print(f2, 'probability imbalance')
-                break    
+                if highp > lowp * (3/2):
+                    status = 'bad'
+                    f2 = f2 +1
+                    print(f2, 'probability imbalance')
+                    break    
             # it survives all tests
             if status == 'good':
                 break
         if status == 'bad':
             # reset everything, break out of for loop
-            for n in range(1, 29):
+            for n in range(0, 30):
                 tile_number[n] = 0
-
-#altered code down to here
-            
-            field_p = 0
-            pasture_p = 0
-            forest_p = 0
-            hill_p = 0
-            mountain_p = 0
+            for tt in terrain:
+                prob_ter[tt] = 0
+                red_ter[tt] = 0
             break
         # disc is ok
         tile_number[p] = nt
@@ -311,9 +329,7 @@ while True:
     if status == 'good':
         break
 # number discs are complete
-                
-
- 
+  
 # select number tokens in order
 # pick random location
 # if desert or if disc already there pick new location
@@ -324,69 +340,17 @@ while True:
 # test that there are no triples of red with 5 and 9
 # test that the resources have even probabilities
 
-#balance harbours
-# 3:1 harbours must not be adjacent to each other
-harb_t = ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x']
-h_types = ['3:1',
-               '3:1',
-               '3:1',
-               '3:1',
-               'wheat',
-               'sheep',
-               'wood',
-               'brick',
-               'ore']
-
-f3 = 0
-while True:
-    # go through harbour types, pick random location, test for adjacency
-    for i in h_types:
-        status = 'good'
-        # find location
-        while True:
-            # p is location
-            p = int(9 * random_1())
-            # location p not used already
-            if harb_t[p] == 'x':
-                break
-        # test that previous and next location is not the same
-        if i == '3:1':
-            # find previous
-            before = p - 1
-            if before < 0:
-                before = 8
-            # find next
-            after = p + 1
-            if after > 8:
-                after = 0
-            if harb_t[before] == '3:1' or harb_t[after] == '3:1':
-                status = 'bad'
-                f3 = f3 + 1
-                print(f3)
-                # reset the harbours
-                harb_t = ['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'x']
-                break
-        if status == 'good':
-            harb_t[p] = i
-# if finished loop at status good, break out
-    if status == 'good':
-        break
-
-
 #print errors
 print ('number of arrangements of hexagons', f1)
 print ('number of arrangements of discs', f2)
-print ('number of arrangements of harbours', f3)
 print (highp, ' ', lowp)
 
-print('            ', tile_ter[0], tile_number[0], '  ', tile_ter[1], tile_number[1], '  ', tile_ter[2], tile_number[2])
-print('      ', tile_ter[3], tile_number[3], '  ', tile_ter[4], tile_number[4], '  ', tile_ter[5], tile_number[5], '  ', tile_ter[6], tile_number[6])
-print(tile_ter[7], tile_number[7], '  ', tile_ter[8], tile_number[8], '  ', tile_ter[9], tile_number[9], '  ', tile_ter[10], tile_number[10], '  ', tile_ter[11], tile_number[11])
-print('      ', tile_ter[12], tile_number[12], '  ', tile_ter[13], tile_number[13], '  ', tile_ter[14], tile_number[14], '  ', tile_ter[15], tile_number[15])
-print('            ', tile_ter[16], tile_number[16], '  ', tile_ter[17], tile_number[17], '  ', tile_ter[18], tile_number[18])
-
-# print harbours
-for m in range(0, 9):
-    print(harb_t[m])
+print('                  ', tile_ter[0], tile_number[0], '  ', tile_ter[1], tile_number[1], '  ', tile_ter[2], tile_number[2])
+print('            ', tile_ter[3], tile_number[3], '  ', tile_ter[4], tile_number[4], '  ', tile_ter[5], tile_number[5], '  ', tile_ter[6], tile_number[6])
+print('      ', tile_ter[7], tile_number[7], '  ', tile_ter[8], tile_number[8], '  ', tile_ter[9], tile_number[9], '  ', tile_ter[10], tile_number[10], '  ', tile_ter[11], tile_number[11])
+print(tile_ter[12], tile_number[12], '  ', tile_ter[13], tile_number[13], '  ', tile_ter[14], tile_number[14], '  ', tile_ter[15], tile_number[15], '  ', tile_ter[16], tile_number[16], '  ', tile_ter[17], tile_number[17])
+print('      ', tile_ter[18], tile_number[18], '  ', tile_ter[19], tile_number[19], '  ', tile_ter[20], tile_number[20], '  ', tile_ter[21], tile_number[21], '  ', tile_ter[22], tile_number[22])
+print('            ', tile_ter[23], tile_number[23], '  ', tile_ter[24], tile_number[24], '  ', tile_ter[25], tile_number[25], '  ', tile_ter[26], tile_number[26])
+print('                  ', tile_ter[27], tile_number[27], '  ', tile_ter[28], tile_number[28], '  ', tile_ter[29], tile_number[29])
 
 
