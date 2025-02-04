@@ -201,8 +201,10 @@ while True:
     # go through number tokens
     # previous disc number
     prev = 0
+    prev_prev = 0
     # previous location
-    prev_p = 0 
+    prev_p = 99
+    prev_prev_p = 99
     for nt in disc_number:
         # print(nt)
         status = 'good'
@@ -228,7 +230,7 @@ while True:
                         break
             if status == 'bad':
                 break
-            # test for same numbered discs
+            # test for same numbered discs of previous disc
             if nt == prev:
                 # same numbered discs on same terrain
                 if tile_ter[p] == tile_ter[prev_p]:
@@ -239,6 +241,23 @@ while True:
                 # same numbered discs are adjacent
                 for a in adj[p]:
                     if a == prev_p:
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' equal disc adjacent')
+                        break
+                if status == 'bad':
+                    break
+            # test for same numbered discs as previous to prevous disc
+            if nt == prev_prev:
+                # same numbered discs on same terrain
+                if tile_ter[p] == tile_ter[prev_prev_p]:
+                    status = 'bad'
+                    f2 = f2 + 1
+                    print(f2, ' equal disc on same terrain')
+                    break
+                # same numbered discs are adjacent
+                for a in adj[p]:
+                    if a == prev_prev_p:
                         status = 'bad'
                         f2 = f2 + 1
                         print(f2, ' equal disc adjacent')
@@ -322,7 +341,10 @@ while True:
             break
         # disc is ok
         tile_number[p] = nt
+        # previous and previous to previous locations and discs saved
+        prev_prev = prev
         prev = nt
+        prev_prev_p = prev_p
         prev_p = p
         # repeat loop with new nt
     # if loop finished break out
