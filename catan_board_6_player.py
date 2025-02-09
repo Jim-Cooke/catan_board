@@ -219,6 +219,41 @@ while True:
         # location is not desert and does not already have a number
         #while loop around tests
         while True:
+            # test for same numbered discs of previous disc
+            if nt == prev:
+                # same numbered discs on same terrain
+                if tile_ter[p] == tile_ter[prev_p]:
+                    status = 'bad'
+                    f2 = f2 + 1
+                    print(f2, ' equal disc on same terrain')
+                    break
+            # test for same numbered discs as previous to prevous disc
+            if nt == prev_prev:
+                if tile_ter[p] == tile_ter[prev_prev_p]:
+                    status = 'bad'
+                    f2 = f2 + 1
+                    print(f2, ' equal disc on same terrain')
+                    break
+            # same numbered discs are adjacent for prev
+            if nt == prev:
+                for a in adj[p]:
+                    if a == prev_p:
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' equal disc adjacent')
+                        break
+                if status == 'bad':
+                    break
+            # same numbered discs are adjacent for previous to previous
+            if nt == prev_prev:
+                for a in adj[p]:
+                    if a == prev_prev_p:
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' equal disc adjacent')
+                        break
+                if status == 'bad':
+                    break
             # if 6 or 8 cannot be adjacent to 6 or 8
             if (nt==6 or nt==8) and (prev==6 or prev==8):
                 # test for adjacency
@@ -230,40 +265,7 @@ while True:
                         break
             if status == 'bad':
                 break
-            # test for same numbered discs of previous disc
-            if nt == prev:
-                # same numbered discs on same terrain
-                if tile_ter[p] == tile_ter[prev_p]:
-                    status = 'bad'
-                    f2 = f2 + 1
-                    print(f2, ' equal disc on same terrain')
-                    break
-                # same numbered discs are adjacent
-                for a in adj[p]:
-                    if a == prev_p:
-                        status = 'bad'
-                        f2 = f2 + 1
-                        print(f2, ' equal disc adjacent')
-                        break
-                if status == 'bad':
-                    break
-            # test for same numbered discs as previous to prevous disc
-            if nt == prev_prev:
-                # same numbered discs on same terrain
-                if tile_ter[p] == tile_ter[prev_prev_p]:
-                    status = 'bad'
-                    f2 = f2 + 1
-                    print(f2, ' equal disc on same terrain')
-                    break
-                # same numbered discs are adjacent
-                for a in adj[p]:
-                    if a == prev_prev_p:
-                        status = 'bad'
-                        f2 = f2 + 1
-                        print(f2, ' equal disc adjacent')
-                        break
-                if status == 'bad':
-                    break
+
             # test for 6, 8 on five different terrain types
             if nt == 6 or nt == 8:
                 red_ter[tile_ter[p]] = red_ter[tile_ter[p]] + 1
