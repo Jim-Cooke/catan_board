@@ -208,4 +208,130 @@ print('                  ', tile_ter[27], '  ', tile_ter[28], '  ', tile_ter[29]
 # each terrain type must have a red disk
 # terrain types to be less that 1.5 times more probability points than each other
 
+# add number discs to board
+# various rules
+f2 = 0
+while True:
+    # go through number tokens
+    # previous disc number
+    prev = 0
+    prev_prev = 0
+    # previous location
+    prev_p = 99
+    prev_prev_p = 99
+    for nt in disc_number:
+        # print(nt)
+        status = 'good'
+        # find location
+        # generate location, test it.
+        # only start over if 30 locations fail
+        for att in range(0, 30):
+            status = 'good'
+            while True:
+                # p is location
+                p = int(30 * random_1())
+                # find unused tile location, not desert
+                # print(p)
+                if tile_ter[p] != 'desert' and tile_number[p] == 0:
+                    break
+            # red (6 and 8) cannot be adjacent
+            if (nt==6 or nt==8) and (prev==6 or prev==8):
+                # test for adjacency
+                for a in adj[p]:
+                    if (tile_number[a]==6 or tile_number[a]==8):
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' red disk adjacent')
+                        continue
+            # same number disks cannot be adjacent
+            # same numbered discs are adjacent for prev
+            if nt == prev:
+                for a in adj[p]:
+                    if a == prev_p:
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' equal disc adjacent')
+                        break
+                if status == 'bad':
+                    continue
+            # same numbered discs are adjacent for previous to previous
+            if nt == prev_prev:
+                for a in adj[p]:
+                    if a == prev_prev_p:
+                        status = 'bad'
+                        f2 = f2 + 1
+                        print(f2, ' equal disc adjacent')
+                        break
+                if status == 'bad':
+                    continue
+            # same number disks cannot be on same terrain type
+            # previous
+            if nt == prev:
+                if tile_ter[p] == tile_ter[prev_p]:
+                     status = 'bad'
+                     f2 = f2 + 1
+                     print(f2, ' equal disc on same terrain')
+                     continue
+            # previous to previous
+            if nt == prev_prev:
+                if tile_ter[p] == tile_ter[prev_prev_p]:
+                     status = 'bad'
+                     f2 = f2 + 1
+                     print(f2, ' equal disc on same terrain')
+                     continue
+            # red disks cannot be adjacent to a 5 and 9 which are adjacent to each other
+            # each terrain type must have a red disk
+
+            # it survives tests
+            if status == 'good':
+                break
+        if status == 'bad':
+            # reset everything, break out of for loop
+            for n in range(0, 30):
+                tile_number[n] = 0
+            for tt in terrain:
+                prob_ter[tt] = 0
+                red_ter[tt] = 0
+            break
+        # disc is ok
+        print(nt)
+        # find out probability
+        if nt == 2 or nt == 12:
+            dots = 1
+        if nt == 3 or nt == 11:
+            dots = 2
+        if nt == 4 or nt == 10:
+            dots = 3
+        if nt == 5 or nt == 9:
+            dots = 4
+        if nt == 6 or nt == 8:
+            dots = 5
+        prob_ter[tile_ter[p]] = prob_ter[tile_ter[p]] + dots
+        tile_number[p] = nt
+        # previous and previous to previous locations and discs saved
+        prev_prev = prev
+        prev = nt
+        prev_prev_p = prev_p
+        prev_p = p
+        # repeat loop with new nt
+    # if loop finished break out
+    if status == 'good':
+        break
+            
+#print errors
+print ('number of arrangements of hexagons', f1)
+print ('number of arrangements of discs', f2)
+# print (highp, ' ', lowp)
+
+print('                  ', tile_ter[0], tile_number[0], '  ', tile_ter[1], tile_number[1], '  ', tile_ter[2], tile_number[2])
+print('            ', tile_ter[3], tile_number[3], '  ', tile_ter[4], tile_number[4], '  ', tile_ter[5], tile_number[5], '  ', tile_ter[6], tile_number[6])
+print('      ', tile_ter[7], tile_number[7], '  ', tile_ter[8], tile_number[8], '  ', tile_ter[9], tile_number[9], '  ', tile_ter[10], tile_number[10], '  ', tile_ter[11], tile_number[11])
+print(tile_ter[12], tile_number[12], '  ', tile_ter[13], tile_number[13], '  ', tile_ter[14], tile_number[14], '  ', tile_ter[15], tile_number[15], '  ', tile_ter[16], tile_number[16], '  ', tile_ter[17], tile_number[17])
+print('      ', tile_ter[18], tile_number[18], '  ', tile_ter[19], tile_number[19], '  ', tile_ter[20], tile_number[20], '  ', tile_ter[21], tile_number[21], '  ', tile_ter[22], tile_number[22])
+print('            ', tile_ter[23], tile_number[23], '  ', tile_ter[24], tile_number[24], '  ', tile_ter[25], tile_number[25], '  ', tile_ter[26], tile_number[26])
+print('                  ', tile_ter[27], tile_number[27], '  ', tile_ter[28], tile_number[28], '  ', tile_ter[29], tile_number[29])
+
+
+
+
 
