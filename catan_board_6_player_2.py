@@ -280,8 +280,42 @@ while True:
                      print(f2, ' equal disc on same terrain')
                      continue
             # red disks cannot be adjacent to a 5 and 9 which are adjacent to each other
+            if nt == 9:
+                # find adjacent 5
+                for a3 in adj[p]:
+                    if tile_number[a3] == 5:
+                        # find adjacent 6 or 8
+                        for b3 in adj[a3]:
+                            if tile_number[b3] == 6 or tile_number[b3] == 8:
+                                # see if it is adjacent to p
+                                for c3 in adj[b3]:
+                                    if c3 == p:
+                                        status = 'bad'
+                                        f2 = f2 +1
+                                        print(f2, 'too-powerful triple')
+                                        break
+                            if status == 'bad':
+                                break
+                    if status == 'bad':
+                        break
+                if status == 'bad':
+                    continue
             # each terrain type must have a red disk
-
+            if nt == 6 or nt == 8:
+                if red_ter[tile_ter[p]] > 1:
+                    status = 'bad'
+                    f2 = f2 +1
+                    print(f2, 'red disk terrain imbalance')
+                    continue
+                for r3 in terrain:
+                    if red_ter[r3] > 1 and red_ter[tile_ter[p]] > 0:
+                        status = 'bad'
+                        f2 = f2 +1
+                        print(f2, 'red disk terrain imbalance')
+                        break
+                if status == 'bad':
+                    continue                   
+                        
             # it survives tests
             if status == 'good':
                 break
@@ -295,6 +329,9 @@ while True:
             break
         # disc is ok
         print(nt)
+        # add to count of red disks on different terrain
+        if nt == 6 or nt == 8:
+            red_ter[tile_ter[p]] = red_ter[tile_ter[p]] + 1
         # find out probability
         if nt == 2 or nt == 12:
             dots = 1
