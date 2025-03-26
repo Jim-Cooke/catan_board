@@ -217,8 +217,23 @@ while True:
                         f2 = f2 + 1
                         print(f2, ' red disk adjacent')
                         continue
-            # same number disks cannot be adjacent
-            # same numbered discs are adjacent for prev
+            # terrain type that does not have 6 or 8 must have 5 and 9
+            if nt == 10 and prev == 9:
+                # find which terrain does not have 6 or 8
+                for nored in terrain:
+                    if red_ter[nored] == 0:
+                        break
+                # count 5 and 9 on that terrain
+                count59 = 0
+                for hex in range (0, 19):
+                    if tile_ter[hex] == nored and (tile_number[hex] == 5 or tile_number[hex] == 9):
+                        count59 = count59 + 1
+                if count59 < 2:
+                    status = 'bad'
+                    f2 = f2 + 1
+                    print(f2, 'terrain without red too weak')
+                    break
+            # same numbered discs cannot be adjacent
             if nt == prev:
                 for a in adj[p]:
                     if a == prev_p:
